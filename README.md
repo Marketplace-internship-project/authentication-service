@@ -1,3 +1,3 @@
-# Service Template
+# Authorization service
 ---
-Just take and use
+Security first!
