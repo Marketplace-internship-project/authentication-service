@@ -59,14 +59,26 @@
             <artifactId>liquibase-core</artifactId> <!-- Инструмент для управления миграциями схемы базы данных. -->
         </dependency>
 
-        <!-- Зависимости для кэширования -->
+<!--        зависимости для работы с крединтейлами, шифрованием и jwt-токанами -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId> <!-- Стартер для поддержки кэширования в Spring. -->
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId> <!-- Стартер для интеграции с Redis, используемого в качестве хранилища кэша. -->
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.5</version> </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Утилиты для разработки -->
