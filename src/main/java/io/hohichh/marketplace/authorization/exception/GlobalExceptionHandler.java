@@ -1,5 +1,7 @@
 package io.hohichh.marketplace.authorization.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -7,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
+    static private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     public record ErrorResponse(String message) {
     }
 
@@ -26,6 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGenericException(Exception ex) {
+        logger.error("Internal error: {}", ex.getMessage());
         return new ErrorResponse("Internal error: " + ex.getMessage());
     }
 }

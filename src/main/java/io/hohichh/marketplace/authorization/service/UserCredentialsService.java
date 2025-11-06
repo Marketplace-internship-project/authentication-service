@@ -8,7 +8,7 @@ import io.hohichh.marketplace.authorization.dto.UserCredentialsResponseDto;
 import org.springframework.data.crossstore.ChangeSetPersister;
 
 public interface UserCredentialsService {
-    UserCredentialsResponseDto saveUserCredentials(UserCredentialsCreateDto createDto) throws ChangeSetPersister.NotFoundException;
+    UserCredentialsResponseDto saveUserCredentials(UserCredentialsCreateDto createDto);
     LoginResponseDto login(LoginRequestDto loginDto);
     LoginResponseDto refresh(RefreshTokenRequestDto refreshDto);
 }
