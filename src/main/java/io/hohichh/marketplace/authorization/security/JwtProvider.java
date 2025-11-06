@@ -13,6 +13,9 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.UUID;
 
+import java.time.Clock;
+
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -23,6 +26,8 @@ public class JwtProvider {
     private SecretKey accessSecretKey;
     private SecretKey refreshSecretKey;
 
+    private final Clock clock;
+
     @PostConstruct
     protected void init() {
         this.accessSecretKey = Keys.hmacShaKeyFor(jwtProperties.getAccessSecret().getBytes());
@@ -31,11 +36,13 @@ public class JwtProvider {
 
 
     public String createAccessToken(UUID userId, String role) {
-        Claims claims = Jwts.claims().subject(userId.toString()).build();
-        claims.put("role", role);
+        Claims claims = Jwts.claims()
+                .subject(userId.toString())
+                .add("role", role)
+                .build();
 
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtProperties.getAccessExpirationTime());
+        Date now = Date.from(clock.instant());
+        Date validity = Date.from(now.toInstant().plusMillis(jwtProperties.getAccessExpirationTime()));
 
         return Jwts.builder()
                 .claims(claims)
@@ -49,8 +56,8 @@ public class JwtProvider {
     public String createRefreshToken(UUID userId) {
         Claims claims = Jwts.claims().subject(userId.toString()).build();
 
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtProperties.getRefreshExpirationTime());
+        Date now = Date.from(clock.instant());
+        Date validity = Date.from(now.toInstant().plusMillis(jwtProperties.getRefreshExpirationTime()));
 
         return Jwts.builder()
                 .claims(claims)
