@@ -1,4 +1,4 @@
-package io.hohichh.marketplace.authorization.integration;
+package io.hohichh.marketplace.authentication.integration;
 
 
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,10 @@
-package io.hohichh.marketplace.authorization.integration;
+package io.hohichh.marketplace.authentication.integration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.hohichh.marketplace.authorization.integration.config.TestClockConfiguration;
-import io.hohichh.marketplace.authorization.integration.config.TestContainerConfiguration;
+import io.hohichh.marketplace.authentication.integration.config.TestClockConfiguration;
+import io.hohichh.marketplace.authentication.integration.config.TestContainerConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

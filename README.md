@@ -1,3 +1,3 @@
-# Authorization service
+# Authentication service
 ---
 Security first!

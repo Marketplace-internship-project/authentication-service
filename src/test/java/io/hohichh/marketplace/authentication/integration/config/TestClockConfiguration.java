@@ -1,4 +1,4 @@
-package io.hohichh.marketplace.authorization.integration.config;
+package io.hohichh.marketplace.authentication.integration.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

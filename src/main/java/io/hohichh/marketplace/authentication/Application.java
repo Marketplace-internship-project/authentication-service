@@ -1,4 +1,4 @@
-package io.hohichh.marketplace.authorization;
+package io.hohichh.marketplace.authentication;
 
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
