@@ -1,6 +1,6 @@
-package io.hohichh.marketplace.authorization.repository;
+package io.hohichh.marketplace.authentication.repository;
 
-import io.hohichh.marketplace.authorization.model.UserCredentials;
+import io.hohichh.marketplace.authentication.model.UserCredentials;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

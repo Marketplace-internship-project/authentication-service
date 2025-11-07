@@ -1,5 +1,5 @@
 
-package io.hohichh.marketplace.authorization.dto;
+package io.hohichh.marketplace.authentication.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

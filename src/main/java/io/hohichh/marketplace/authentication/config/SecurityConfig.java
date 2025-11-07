@@ -4,7 +4,7 @@
  * defining password encoding and HTTP security rules.
  */
 
-package io.hohichh.marketplace.authorization.config;
+package io.hohichh.marketplace.authentication.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

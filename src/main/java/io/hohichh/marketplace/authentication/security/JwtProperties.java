@@ -1,4 +1,4 @@
-package io.hohichh.marketplace.authorization.security;
+package io.hohichh.marketplace.authentication.security;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

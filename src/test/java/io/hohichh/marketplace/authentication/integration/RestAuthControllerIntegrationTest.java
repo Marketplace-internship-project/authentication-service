@@ -1,11 +1,12 @@
 package io.hohichh.marketplace.authentication.integration;
 
+import io.hohichh.marketplace.authentication.dto.*;
 import io.hohichh.marketplace.authorization.dto.*;
-import io.hohichh.marketplace.authorization.exception.GlobalExceptionHandler;
-import io.hohichh.marketplace.authorization.model.Role;
-import io.hohichh.marketplace.authorization.model.RoleName;
-import io.hohichh.marketplace.authorization.repository.RoleRepository;
-import io.hohichh.marketplace.authorization.repository.UserCredentialsRepository;
+import io.hohichh.marketplace.authentication.exception.GlobalExceptionHandler;
+import io.hohichh.marketplace.authentication.model.Role;
+import io.hohichh.marketplace.authentication.model.RoleName;
+import io.hohichh.marketplace.authentication.repository.RoleRepository;
+import io.hohichh.marketplace.authentication.repository.UserCredentialsRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

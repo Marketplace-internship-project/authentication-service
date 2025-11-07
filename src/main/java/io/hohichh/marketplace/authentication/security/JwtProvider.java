@@ -4,9 +4,9 @@
  * handling the creation, validation, and parsing of access and refresh tokens.
  */
 
-package io.hohichh.marketplace.authorization.security;
+package io.hohichh.marketplace.authentication.security;
 
-import io.hohichh.marketplace.authorization.exception.JwtAuthenticationException;
+import io.hohichh.marketplace.authentication.exception.JwtAuthenticationException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;

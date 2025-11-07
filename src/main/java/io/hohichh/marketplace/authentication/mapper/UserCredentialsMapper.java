@@ -1,8 +1,8 @@
-package io.hohichh.marketplace.authorization.mapper;
+package io.hohichh.marketplace.authentication.mapper;
 
-import io.hohichh.marketplace.authorization.dto.UserCredentialsCreateDto;
-import io.hohichh.marketplace.authorization.dto.UserCredentialsResponseDto;
-import io.hohichh.marketplace.authorization.model.UserCredentials;
+import io.hohichh.marketplace.authentication.model.UserCredentials;
+import io.hohichh.marketplace.authentication.dto.UserCredentialsCreateDto;
+import io.hohichh.marketplace.authentication.dto.UserCredentialsResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

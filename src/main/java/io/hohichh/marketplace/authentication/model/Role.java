@@ -1,4 +1,4 @@
-package io.hohichh.marketplace.authorization.model;
+package io.hohichh.marketplace.authentication.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

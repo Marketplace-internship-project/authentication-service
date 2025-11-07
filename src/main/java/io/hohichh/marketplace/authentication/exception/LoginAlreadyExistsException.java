@@ -1,4 +1,4 @@
-package io.hohichh.marketplace.authorization.exception;
+package io.hohichh.marketplace.authentication.exception;
 
 public class LoginAlreadyExistsException extends RuntimeException{
 

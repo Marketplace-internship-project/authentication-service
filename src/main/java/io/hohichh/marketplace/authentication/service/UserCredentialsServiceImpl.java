@@ -4,18 +4,18 @@
  * handling credential storage, user login, and token management.
  */
 
-package io.hohichh.marketplace.authorization.service;
+package io.hohichh.marketplace.authentication.service;
 
-import io.hohichh.marketplace.authorization.dto.*;
-import io.hohichh.marketplace.authorization.exception.JwtAuthenticationException;
-import io.hohichh.marketplace.authorization.exception.LoginAlreadyExistsException;
-import io.hohichh.marketplace.authorization.mapper.UserCredentialsMapper;
-import io.hohichh.marketplace.authorization.model.Role;
-import io.hohichh.marketplace.authorization.model.RoleName;
-import io.hohichh.marketplace.authorization.model.UserCredentials;
-import io.hohichh.marketplace.authorization.repository.RoleRepository;
-import io.hohichh.marketplace.authorization.repository.UserCredentialsRepository;
-import io.hohichh.marketplace.authorization.security.JwtProvider;
+import io.hohichh.marketplace.authentication.dto.*;
+import io.hohichh.marketplace.authentication.exception.JwtAuthenticationException;
+import io.hohichh.marketplace.authentication.exception.LoginAlreadyExistsException;
+import io.hohichh.marketplace.authentication.model.Role;
+import io.hohichh.marketplace.authentication.model.RoleName;
+import io.hohichh.marketplace.authentication.model.UserCredentials;
+import io.hohichh.marketplace.authentication.repository.RoleRepository;
+import io.hohichh.marketplace.authentication.repository.UserCredentialsRepository;
+import io.hohichh.marketplace.authentication.security.JwtProvider;
+import io.hohichh.marketplace.authentication.mapper.UserCredentialsMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -4,10 +4,11 @@
  * providing API endpoints for credential creation, user login, and token refreshing.
  */
 
-package io.hohichh.marketplace.authorization.controller;
+package io.hohichh.marketplace.authentication.controller;
 
-import io.hohichh.marketplace.authorization.dto.*;
-import io.hohichh.marketplace.authorization.service.UserCredentialsService;
+import io.hohichh.marketplace.authentication.dto.*;
+
+import io.hohichh.marketplace.authentication.service.UserCredentialsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
