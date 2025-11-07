@@ -1,3 +1,9 @@
+/*
+ * Author: Yelizaveta Verkovich aka Hohich
+ * Task: Implement the core business logic for the Authorization Service,
+ * handling credential storage, user login, and token management.
+ */
+
 package io.hohichh.marketplace.authorization.service;
 
 import io.hohichh.marketplace.authorization.dto.*;
@@ -19,19 +25,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 public class UserCredentialsServiceImpl implements UserCredentialsService {
+
     private final RoleRepository roleRepository;
     private final UserCredentialsRepository userCredentialsRepository;
     private final UserCredentialsMapper mapper;
-
-
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtTokenProvider;
 
     static private final Logger logger = LoggerFactory.getLogger(UserCredentialsServiceImpl.class);
 
+    /**
+     * Saves a new user's credentials, hashes the password, and assigns the default USER role.
+     *
+     * @param createDto DTO containing data for creating new credentials (userId, login, password).
+     * @return A DTO representing the newly saved user credentials.
+     * @throws LoginAlreadyExistsException if the login (email) is already in use.
+     * @throws RuntimeException if the default 'USER' role is not found in the database.
+     */
     @Override
     @Transactional
     public UserCredentialsResponseDto saveUserCredentials(
@@ -49,9 +63,10 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
         Role newUserRole = roleRepository
                 .findRoleByRoleName(RoleName.USER)
                 .orElseThrow(() -> {
-                    logger.error("Error: Unable to find {} role in database", RoleName.USER);
-                    return new RuntimeException("No '" + RoleName.USER + "' role in storage");
-                }
+                            logger.error("Error: Unable to find {} role in database", RoleName.USER);
+                            // This is a critical configuration error, hence RuntimeException
+                            return new RuntimeException("No '" + RoleName.USER + "' role in storage");
+                        }
                 );
 
         newUser.setRole(newUserRole);
@@ -64,6 +79,13 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
         return mapper.toResponseDto(savedUser);
     }
 
+    /**
+     * Validates user credentials and generates JWT tokens upon successful authentication.
+     *
+     * @param loginDto DTO containing the user's login and password.
+     * @return A DTO containing a new access and refresh token pair.
+     * @throws JwtAuthenticationException if the login is incorrect or the password does not match.
+     */
     @Override
     @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto loginDto) {
@@ -89,6 +111,14 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
         return new LoginResponseDto(accessToken, refreshToken);
     }
 
+    /**
+     * Validates a refresh token and issues a new pair of tokens.
+     *
+     * @param refreshDto DTO containing the user's valid refresh token.
+     * @return A new DTO containing a regenerated access and refresh token pair.
+     * @throws JwtAuthenticationException if the refresh token is invalid, expired,
+     * or the associated user does not exist.
+     */
     @Override
     @Transactional
     public LoginResponseDto refresh(RefreshTokenRequestDto refreshDto) {
