@@ -1,7 +1,6 @@
 package io.hohichh.marketplace.authentication.integration;
 
 import io.hohichh.marketplace.authentication.dto.*;
-import io.hohichh.marketplace.authorization.dto.*;
 import io.hohichh.marketplace.authentication.exception.GlobalExceptionHandler;
 import io.hohichh.marketplace.authentication.model.Role;
 import io.hohichh.marketplace.authentication.model.RoleName;
