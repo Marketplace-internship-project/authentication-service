@@ -118,6 +118,7 @@ public class JwtProvider {
         try {
             Jwts.parser()
                     .verifyWith(refreshSecretKey)
+                    .clock(() -> Date.from(clock.instant()))
                     .build()
                     .parseSignedClaims(token);
             return true;
@@ -149,6 +150,7 @@ public class JwtProvider {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(refreshSecretKey)
+                    .clock(() -> Date.from(clock.instant()))
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
