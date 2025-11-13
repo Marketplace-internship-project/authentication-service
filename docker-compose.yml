@@ -4,9 +4,9 @@ services:
 
   app:
     build: .
-    container_name: marketplace-app
+    container_name: auth-service
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
@@ -22,13 +22,13 @@ services:
 
   postgres-db:
     image: postgres:16-alpine
-    container_name: postgres-db
+    container_name: postgres-auth-db
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
