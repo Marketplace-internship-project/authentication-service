@@ -5,4 +5,50 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
 
+
+    <changeSet id="001-initial-schema" author="your-name-here">
+
+        <createTable tableName="roles">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="role_name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <insert tableName="roles">
+            <column name="id" value="a0000000-0000-0000-0000-000000000001"/>
+            <column name="role_name" value="ADMIN"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="id" value="a0000000-0000-0000-0000-000000000002"/>
+            <column name="role_name" value="USER"/>
+        </insert>
+
+        <createTable tableName="user_credentials">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="login" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password_hash" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="user_credentials"
+                                 baseColumnNames="role_id"
+                                 constraintName="fk_user_credentials_role"
+                                 referencedTableName="roles"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
 </databaseChangeLog>
