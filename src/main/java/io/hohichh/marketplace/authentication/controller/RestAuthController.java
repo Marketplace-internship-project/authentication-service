@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 /**
  * Author: Yelizaveta Verkovich aka Hohich
  * Task: Implement the REST controller layer for the Authorization Service,
@@ -44,6 +46,19 @@ public class RestAuthController {
 
         UserCredentialsResponseDto response = userCredentialsService.saveUserCredentials(createDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Deletes user credentials.
+     * Secured endpoint: only the owner of the account or ADMIN can perform this action.
+     *
+     * @param userId The UUID of the user whose credentials should be deleted.
+     * @return HTTP 204 No Content.
+     */
+    @DeleteMapping(value = "/credentials", params = "user-id")
+    public ResponseEntity<Void> deleteCredentialsByUserId(@RequestParam("user-id") UUID userId) {
+        userCredentialsService.deleteUserCredentialsByUserId(userId);
+        return ResponseEntity.noContent().build();
     }
 
     /**

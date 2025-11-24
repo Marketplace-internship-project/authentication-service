@@ -9,6 +9,7 @@ package io.hohichh.marketplace.authentication.service;
 import io.hohichh.marketplace.authentication.dto.*;
 import io.hohichh.marketplace.authentication.exception.JwtAuthenticationException;
 import io.hohichh.marketplace.authentication.exception.LoginAlreadyExistsException;
+import io.hohichh.marketplace.authentication.exception.ResourceNotFoundException;
 import io.hohichh.marketplace.authentication.model.Role;
 import io.hohichh.marketplace.authentication.model.RoleName;
 import io.hohichh.marketplace.authentication.model.UserCredentials;
@@ -19,6 +20,7 @@ import io.hohichh.marketplace.authentication.mapper.UserCredentialsMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,8 +66,7 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
                 .findRoleByRoleName(RoleName.USER)
                 .orElseThrow(() -> {
                             logger.error("Error: Unable to find {} role in database", RoleName.USER);
-                            // This is a critical configuration error, hence RuntimeException
-                            return new RuntimeException("No '" + RoleName.USER + "' role in storage");
+                            return new ResourceNotFoundException("No '" + RoleName.USER + "' role in storage");
                         }
                 );
 
@@ -77,6 +78,22 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
 
         logger.info("Successfully register new user");
         return mapper.toResponseDto(savedUser);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("#userId.toString() == authentication.name")
+    public void deleteUserCredentialsByUserId(UUID userId){
+        logger.debug("Attempting to delete user credentials");
+
+        if (userCredentialsRepository.existsByUserId(userId)) {
+            userCredentialsRepository.deleteById(userId);
+        } else{
+            logger.error("Error: Unable to delete user credentials with id {}", userId);
+            throw new ResourceNotFoundException("No credentials with user id " + userId);
+        }
+
+        logger.info("Successfully deleted user credentials");
     }
 
     /**

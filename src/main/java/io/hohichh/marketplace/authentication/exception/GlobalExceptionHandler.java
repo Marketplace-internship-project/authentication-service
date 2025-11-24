@@ -16,12 +16,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JwtAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleJwtAuthentication(JwtAuthenticationException ex) {
+        logger.error("JwtAuthenticationException occurred: {}", ex.getMessage());
         return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleResourceNotFound(ResourceNotFoundException e) {
+        logger.error("ResourceNotFoundException occurred: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler(LoginAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleLoginAlreadyExists(LoginAlreadyExistsException ex) {
+        logger.error("LoginAlreadyExistsException occurred: {}", ex.getMessage());
         return new ErrorResponse(ex.getMessage());
     }
 
