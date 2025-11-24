@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
@@ -54,8 +55,8 @@ public class JwtProvider {
      */
     @PostConstruct
     protected void init() {
-        this.accessSecretKey = Keys.hmacShaKeyFor(jwtProperties.getAccessSecret().getBytes());
-        this.refreshSecretKey = Keys.hmacShaKeyFor(jwtProperties.getRefreshSecret().getBytes());
+        this.accessSecretKey = Keys.hmacShaKeyFor(jwtProperties.getAccessSecret().getBytes(StandardCharsets.UTF_8));
+        this.refreshSecretKey = Keys.hmacShaKeyFor(jwtProperties.getRefreshSecret().getBytes(StandardCharsets.UTF_8));
     }
 
 

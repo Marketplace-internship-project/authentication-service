@@ -87,7 +87,7 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
         logger.debug("Attempting to delete user credentials");
 
         if (userCredentialsRepository.existsByUserId(userId)) {
-            userCredentialsRepository.deleteById(userId);
+            userCredentialsRepository.deleteByUserId(userId);
         } else{
             logger.error("Error: Unable to delete user credentials with id {}", userId);
             throw new ResourceNotFoundException("No credentials with user id " + userId);

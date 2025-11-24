@@ -6,16 +6,21 @@ import io.hohichh.marketplace.authentication.model.Role;
 import io.hohichh.marketplace.authentication.model.RoleName;
 import io.hohichh.marketplace.authentication.repository.RoleRepository;
 import io.hohichh.marketplace.authentication.repository.UserCredentialsRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import java.nio.charset.StandardCharsets;
 
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,15 +33,16 @@ public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 	@Autowired
 	private RoleRepository roleRepository;
 
-	private final String AUTH_URL = "/v1/auth";
+	@Value("${jwt.access-secret}")
+	private String accessSecret;
 
+	private final String AUTH_URL = "/v1/auth";
 	private final String TEST_LOGIN = "testuser@example.com";
 	private final String TEST_PASSWORD = "Password123!";
 	private final UUID TEST_USER_ID = UUID.randomUUID();
 
 	@BeforeEach
 	public void setupDb() {
-
 		Role adminRole = Role.builder().roleName(RoleName.ADMIN).build();
 		Role userRole = Role.builder().roleName(RoleName.USER).build();
 		roleRepository.saveAll(List.of(adminRole, userRole));
@@ -91,6 +97,76 @@ public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody().message()).contains("This login is already in use");
+	}
+
+	@Test
+	void deleteCredentials_whenOwner_shouldReturnNoContent() {
+		createUser(TEST_LOGIN, TEST_PASSWORD, TEST_USER_ID);
+
+		String token = generateTestToken(TEST_USER_ID, "USER");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+		HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+		ResponseEntity<Void> response = restTemplate.exchange(
+				AUTH_URL + "/credentials?user-id=" + TEST_USER_ID,
+				HttpMethod.DELETE,
+				entity,
+				Void.class
+		);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		assertThat(userCredentialsRepository.findByUserId(TEST_USER_ID)).isEmpty();
+	}
+
+	@Test
+	void deleteCredentials_whenNotOwner_shouldReturnForbidden() {
+		createUser(TEST_LOGIN, TEST_PASSWORD, TEST_USER_ID);
+
+		UUID hackerId = UUID.randomUUID();
+		String token = generateTestToken(hackerId, "USER");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+		HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+
+		ResponseEntity<String> response = restTemplate.exchange(
+				AUTH_URL + "/credentials?user-id=" + TEST_USER_ID,
+				HttpMethod.DELETE,
+				entity,
+				String.class
+		);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+		assertThat(userCredentialsRepository.findByUserId(TEST_USER_ID)).isPresent();
+	}
+
+	@Test
+	void deleteCredentials_whenNoToken_shouldReturnForbidden() {
+		createUser(TEST_LOGIN, TEST_PASSWORD, TEST_USER_ID);
+
+		ResponseEntity<String> response = restTemplate.exchange(
+				AUTH_URL + "/credentials?user-id=" + TEST_USER_ID,
+				HttpMethod.DELETE,
+				null,
+				String.class
+		);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	private String generateTestToken(UUID userId, String role) {
+		SecretKey key = Keys.hmacShaKeyFor(accessSecret.getBytes(StandardCharsets.UTF_8));
+		Instant now = Instant.now();
+		return Jwts.builder()
+				.subject(userId.toString())
+				.claim("role", role)
+				.issuedAt(Date.from(now))
+				.expiration(Date.from(now.plusSeconds(3600)))
+				.signWith(key)
+				.compact();
 	}
 
 	@Test
@@ -184,7 +260,6 @@ public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 		createDto.setUserId(userId);
 		createDto.setLogin(login);
 		createDto.setPassword(password);
-
 		restTemplate.postForEntity(AUTH_URL + "/credentials", createDto, UserCredentialsResponseDto.class);
 	}
 
