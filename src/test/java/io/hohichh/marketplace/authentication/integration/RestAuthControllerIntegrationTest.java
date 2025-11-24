@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 	@Autowired
@@ -159,12 +160,13 @@ public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 
 	private String generateTestToken(UUID userId, String role) {
 		SecretKey key = Keys.hmacShaKeyFor(accessSecret.getBytes(StandardCharsets.UTF_8));
-		Instant now = Instant.now();
+		Mockito.when(clock.instant()).thenReturn(Instant.now());
+		Instant instant = clock.instant();
 		return Jwts.builder()
 				.subject(userId.toString())
 				.claim("role", role)
-				.issuedAt(Date.from(now))
-				.expiration(Date.from(now.plusSeconds(3600)))
+				.issuedAt(Date.from(instant))
+				.expiration(Date.from(instant.plusSeconds(3600)))
 				.signWith(key)
 				.compact();
 	}
