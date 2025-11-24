@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGenericException(Exception ex) {

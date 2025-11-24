@@ -164,4 +164,27 @@ public class JwtProvider {
             throw new JwtAuthenticationException("Can't exctract id from jwt");
         }
     }
+
+    public boolean validateAccessToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(accessSecretKey)
+                    .clock(() -> Date.from(clock.instant()))
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            log.warn("Invalid Access token: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public Claims getAccessClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(accessSecretKey) // Используем ACCESS ключ
+                .clock(() -> Date.from(clock.instant()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
 }

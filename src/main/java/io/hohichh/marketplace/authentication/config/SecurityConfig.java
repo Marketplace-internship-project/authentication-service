@@ -6,6 +6,8 @@
 
 package io.hohichh.marketplace.authentication.config;
 
+import io.hohichh.marketplace.authentication.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Author: Yelizaveta Verkovich aka Hohich
@@ -30,8 +33,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     /**
      * Creates a {@link PasswordEncoder} bean to be used for hashing and validating passwords.
      * This implementation uses the strong BCrypt hashing algorithm.
@@ -70,7 +74,7 @@ public class SecurityConfig {
                                 "/v1/auth/credentials").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
-                );
+                ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
