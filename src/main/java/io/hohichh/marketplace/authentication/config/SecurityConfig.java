@@ -73,6 +73,7 @@ public class SecurityConfig {
                                 "/v1/auth/refresh",
                                 "/v1/auth/credentials").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
