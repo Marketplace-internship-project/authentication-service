@@ -181,7 +181,7 @@ public class JwtProvider {
 
     public Claims getAccessClaims(String token) {
         return Jwts.parser()
-                .verifyWith(accessSecretKey) // Используем ACCESS ключ
+                .verifyWith(accessSecretKey) 
                 .clock(() -> Date.from(clock.instant()))
                 .build()
                 .parseSignedClaims(token)
