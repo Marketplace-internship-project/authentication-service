@@ -38,8 +38,9 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtTokenProvider;
 
-    static private final Logger logger = LoggerFactory.getLogger(UserCredentialsServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserCredentialsServiceImpl.class);
 
+    private static final String WRONG_LOGIN_INFO_MSG = "Wrong login or password";
     /**
      * Saves a new user's credentials, hashes the password, and assigns the default USER role.
      *
@@ -109,16 +110,16 @@ public class UserCredentialsServiceImpl implements UserCredentialsService {
         logger.debug("Attempting to login user");
         UserCredentials user = userCredentialsRepository.findByLogin(loginDto.getLogin())
                 .orElseThrow(() -> {
-                    logger.error("Wrong login or password");
-                    return new JwtAuthenticationException("Wrong login or password");
+                    logger.error(WRONG_LOGIN_INFO_MSG);
+                    return new JwtAuthenticationException(WRONG_LOGIN_INFO_MSG);
                 });
 
         boolean matches = passwordEncoder.matches(loginDto.getPassword(),
                 user.getPasswordHash());
 
         if (!matches) {
-            logger.error("Wrong login or password");
-            throw new JwtAuthenticationException("Wrong login or password");
+            logger.error(WRONG_LOGIN_INFO_MSG);
+            throw new JwtAuthenticationException(WRONG_LOGIN_INFO_MSG);
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getRole().getRoleName().name());

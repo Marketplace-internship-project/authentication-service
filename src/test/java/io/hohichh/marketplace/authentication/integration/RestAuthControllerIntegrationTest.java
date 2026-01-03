@@ -25,9 +25,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 
-public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
+class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 	@Autowired
 	private UserCredentialsRepository userCredentialsRepository;
 
@@ -37,20 +36,20 @@ public class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 	@Value("${jwt.access-secret}")
 	private String accessSecret;
 
-	private final String AUTH_URL = "/v1/auth";
-	private final String TEST_LOGIN = "testuser@example.com";
-	private final String TEST_PASSWORD = "Password123!";
-	private final UUID TEST_USER_ID = UUID.randomUUID();
+	private static final String AUTH_URL = "/v1/auth";
+	private static final String TEST_LOGIN = "testuser@example.com";
+	private static final String TEST_PASSWORD = "Password123!";
+	private static final UUID TEST_USER_ID = UUID.randomUUID();
 
 	@BeforeEach
-	public void setupDb() {
+	 void setupDb() {
 		Role adminRole = Role.builder().roleName(RoleName.ADMIN).build();
 		Role userRole = Role.builder().roleName(RoleName.USER).build();
 		roleRepository.saveAll(List.of(adminRole, userRole));
 	}
 
 	@AfterEach
-	public void cleanup() {
+	 void cleanup() {
 		userCredentialsRepository.deleteAll();
 		roleRepository.deleteAll();
 	}

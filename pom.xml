@@ -121,17 +121,6 @@
             <artifactId>spring-boot-starter-test</artifactId> <!-- Основной стартер для тестирования Spring Boot приложений. Включает JUnit, Mockito и другие полезные библиотеки. -->
             <scope>test</scope> <!-- Зависимость используется только для тестирования. -->
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId> <!-- Встраиваемая база данных in-memory, удобная для тестов. -->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId> <!-- Простая реализация SLF4J для логирования в тестах. -->
-            <version>2.0.7</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Зависимости для интеграционного тестирования с Testcontainers -->
         <dependency>

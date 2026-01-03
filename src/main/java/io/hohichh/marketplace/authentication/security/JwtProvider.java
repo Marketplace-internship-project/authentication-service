@@ -159,7 +159,7 @@ public class JwtProvider {
             String userIdStr = claims.getSubject();
             return UUID.fromString(userIdStr);
 
-        } catch (Exception e) {
+        } catch (Exception _) {
             // Catches parsing errors, signature errors, etc.
             throw new JwtAuthenticationException("Can't exctract id from jwt");
         }
