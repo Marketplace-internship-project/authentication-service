@@ -18,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.Clock;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
