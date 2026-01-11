@@ -1,7 +1,6 @@
 package io.hohichh.marketplace.authentication.integration;
 
 import io.hohichh.marketplace.authentication.dto.*;
-import io.hohichh.marketplace.authentication.exception.GlobalExceptionHandler;
 import io.hohichh.marketplace.authentication.model.Role;
 import io.hohichh.marketplace.authentication.model.RoleName;
 import io.hohichh.marketplace.authentication.repository.RoleRepository;
@@ -42,14 +41,14 @@ class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 	private static final UUID TEST_USER_ID = UUID.randomUUID();
 
 	@BeforeEach
-	 void setupDb() {
+	void setupDb() {
 		Role adminRole = Role.builder().roleName(RoleName.ADMIN).build();
 		Role userRole = Role.builder().roleName(RoleName.USER).build();
 		roleRepository.saveAll(List.of(adminRole, userRole));
 	}
 
 	@AfterEach
-	 void cleanup() {
+	void cleanup() {
 		userCredentialsRepository.deleteAll();
 		roleRepository.deleteAll();
 	}
@@ -87,16 +86,17 @@ class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 		duplicateDto.setLogin(TEST_LOGIN);
 		duplicateDto.setPassword("another-pass");
 
-
-		ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = restTemplate.postForEntity(
+		// Используем ProblemDetail вместо кастомного ErrorResponse
+		ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
 				AUTH_URL + "/credentials",
 				duplicateDto,
-				GlobalExceptionHandler.ErrorResponse.class
+				ProblemDetail.class
 		);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().message()).contains("This login is already in use");
+		// Сообщение теперь находится в поле detail
+		assertThat(response.getBody().getDetail()).contains("This login is already in use");
 	}
 
 	@Test
@@ -132,6 +132,10 @@ class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 		HttpEntity<Void> entity = new HttpEntity<>(headers);
 
 
+		// Для 403 Forbidden Spring Security по умолчанию возвращает пустой body или стандартную ошибку,
+		// но наш GlobalExceptionHandler ловит AccessDeniedException и возвращает ProblemDetail.
+		// Однако, если ошибка возникает на уровне фильтров (до контроллера), тело может отличаться.
+		// В данном тесте мы просто проверяем статус, поэтому тип String или Void допустим.
 		ResponseEntity<String> response = restTemplate.exchange(
 				AUTH_URL + "/credentials?user-id=" + TEST_USER_ID,
 				HttpMethod.DELETE,
@@ -200,15 +204,15 @@ class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 		loginDto.setLogin(TEST_LOGIN);
 		loginDto.setPassword("WRONG_PASSWORD");
 
-		ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = restTemplate.postForEntity(
+		ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
 				AUTH_URL + "/login",
 				loginDto,
-				GlobalExceptionHandler.ErrorResponse.class
+				ProblemDetail.class
 		);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().message()).isEqualTo("Wrong login or password");
+		assertThat(response.getBody().getDetail()).isEqualTo("Wrong login or password");
 	}
 
 	@Test
@@ -244,15 +248,15 @@ class RestAuthControllerIntegrationTest extends AbstractApplicationTest {
 		RefreshTokenRequestDto refreshDto = new RefreshTokenRequestDto();
 		refreshDto.setRefreshToken("not.a.real.token");
 
-		ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = restTemplate.postForEntity(
+		ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
 				AUTH_URL + "/refresh",
 				refreshDto,
-				GlobalExceptionHandler.ErrorResponse.class
+				ProblemDetail.class
 		);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().message()).contains("Refresh token is invalid or has expired");
+		assertThat(response.getBody().getDetail()).contains("Refresh token is invalid or has expired");
 	}
 
 

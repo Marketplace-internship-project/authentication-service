@@ -2,50 +2,81 @@ package io.hohichh.marketplace.authentication.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-    public record ErrorResponse(String message) {
+
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        logger.error("Validation error occurred: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "Validation failed");
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setType(URI.create("urn:problem-type:validation-error"));
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        problemDetail.setProperty("errors", errors);
+
+        return createResponseEntity(problemDetail, headers, status, request);
     }
 
     @ExceptionHandler(JwtAuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleJwtAuthentication(JwtAuthenticationException ex) {
+    public ProblemDetail handleJwtAuthentication(JwtAuthenticationException ex) {
         logger.error("JwtAuthenticationException occurred: {}", ex.getMessage());
-        return new ErrorResponse(ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleResourceNotFound(ResourceNotFoundException e) {
-        logger.error("ResourceNotFoundException occurred: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex) {
+        logger.error("ResourceNotFoundException occurred: {}", ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(LoginAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleLoginAlreadyExists(LoginAlreadyExistsException ex) {
+    public ProblemDetail handleLoginAlreadyExists(LoginAlreadyExistsException ex) {
         logger.error("LoginAlreadyExistsException occurred: {}", ex.getMessage());
-        return new ErrorResponse(ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleAccessDenied(AccessDeniedException ex) {
+    public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
         logger.warn("Access denied: {}", ex.getMessage());
-        return new ErrorResponse("Access Denied: " + ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access Denied: " + ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleGenericException(Exception ex) {
-        logger.error("Internal error: {}", ex.getMessage());
-        return new ErrorResponse("Internal error: " + ex.getMessage());
+    public ProblemDetail handleGenericException(Exception ex) {
+        logger.error("Internal error: {}", ex.getMessage(), ex);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+        problemDetail.setProperty("details", ex.getMessage());
+        return problemDetail;
     }
 }
